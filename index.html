@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="./style/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet">
+  <title>Monthy Hall</title>
+</head>
+
+<body>
+  <h1>Monthy Hall</h1>
+  <h2 class="subtitle">Is it really 2/3?</h2>
+  <div class="container">
+    <div class="door">
+      <p class="content" id="1"></p>
+    </div>
+    <div class="door">
+      <p class="content" id="2"></p>
+    </div>
+    <div class="door">
+      <p class="content" id="3"></p>
+    </div>
+  </div>
+  <div class="switch">Switch?</div>
+  
+  <script scr="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <script src="lodash.js"></script>
+  <script>
+    const doors = document.querySelectorAll('.door');
+    const doorContents = document.querySelectorAll('.content');
+    const subtitle = document.querySelector('.subtitle');
+    let sequence = [
+      {
+        value: "💩",
+        selected: false
+      },
+      {
+        value: "💩",
+        selected: false
+      },
+      {
+        value: "🏆",
+        selected: false
+      }
+    ];
+    let selected;
+    const shuffle = (array) => {
+      let length = array.length;
+      let randomIndex;
+      let temporaryContainer;
+      while (length) {
+        randomIndex = Math.floor(Math.random() * length--);
+        temporaryContainer = array[length];
+        array[length] = array[randomIndex];
+        array[randomIndex] = temporaryContainer;
+      }
+      return array;
+    }
+    const populate = (array) => {
+      array = shuffle(array);
+      counter = 0;
+      doorContents.forEach((door) => {
+        door.innerHTML = array[counter].value;
+        counter++;
+      })
+    }
+
+    const clearListener = () => {
+      doors.forEach((door) => {
+        door.removeEventListener('click', select);
+      })
+      doorContents.forEach((doorContent) => {
+        doorContent.removeEventListener('click', contentSelect);
+      })
+    }
+
+    const revealPoop = () => {
+      index = 0;
+      allPoop = []
+      sequence.forEach((value) =>{
+        if(value.value === "💩"){
+          allPoop.push({
+            value: value.value,
+            index: index
+          })
+        }
+        index++;
+      })
+      
+    }
+
+    const select = (e) => {
+      console.log("select");
+      e.target.style.boxShadow = "0px 0px 5px 10px rgba(176,227,166,1)";
+      clearListener()
+      console.log(revealPoop());
+    }
+
+    const contentSelect = (e) =>{
+      console.log("content select");
+      console.log(e);
+      e.path[1].style.boxShadow = "0px 0px 5px 10px rgba(176,227,166,1)";
+      clearListener()
+      e.stopPropagation();
+      console.log(revealPoop());
+    }
+
+    doorContents.forEach((content) =>{
+      content.addEventListener('click', contentSelect);
+    })
+
+    doors.forEach((door) =>{
+      door.addEventListener('click', select);
+    })
+    populate(sequence);
+  </script>
+</body>
+
+</html>
